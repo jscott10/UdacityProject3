@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Effective JavaScript: Frogger</title>
+
+	<!-- Loading jQuery 2.1.4 from Google CDN -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+
+	<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+	<canvas id="c" width="1500" height="1500"></canvas>
+
+	<script type="text/javascript">
+
+		var canvas, context;
+		init();
+		animate();
+		function init() {
+			var c = $("#c");
+			canvas = c[0];
+		    context = canvas.getContext( '2d' );
+		}
+		function animate() {
+		    requestAnimationFrame( animate );
+		    draw();
+		}
+		function draw() {
+		    var time = new Date().getTime() * 0.001;
+		    var x = Math.sin( time ) * 196 + 38;
+		    var y = Math.cos( time * 0.9 ) * 196 + 38;
+
+		    context.fillStyle = 'rgb(245,245,245)';
+		    context.fillRect( 0, 0, 255, 255 );
+		    context.fillStyle = 'rgb(255,0,0)';
+		    context.beginPath();
+		    context.arc( x, y, 20, 0, Math.PI * 2, true );
+		    context.closePath();
+		    context.fill();
+		}
+
+	</script>
+</body>
+</html>
