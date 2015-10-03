@@ -2,13 +2,13 @@
 
 var ENEMY_START_X = -101,
 	ENEMY_END_X = 505,
-	ROW_Y = [85 * 0 + 60, 85 * 1 + 60, 85 * 2 + 60],
+	ENEMY_Y = [62, 146, 230],
 	ENEMY_MIN_SPEED = 5,
 	ENEMY_MAX_SPEED = 50,
 	PLAYER_START_X = 200,
-	PLAYER_START_Y = 330,
-	PLAYER_JUMP_X = 100,
-	PLAYER_JUMP_Y = 85;
+	PLAYER_START_Y = 325,
+	PLAYER_JUMP_X = 101,
+	PLAYER_JUMP_Y = 84;
 
 function randomEnemySpeed() {
 	return Math.floor((Math.random() * ENEMY_MAX_SPEED) + ENEMY_MIN_SPEED) * 10;
@@ -33,7 +33,12 @@ function randomEnemySpeed() {
 
 function collision(enemy, index, arr) {
 	var w = 101;
-	if ((enemy.loc.y == this.loc.y) && (enemy.loc.x-w < this.loc.x && enemy.loc.x+w > this.loc.x)) {
+	console.log(enemy);
+	console.log(index);
+	console.log(arr);
+	console.log("e: "+enemy.loc.y);
+	console.log("p: "+this.loc.y);
+	if ((enemy.loc.y == this.loc.y-11) && (enemy.loc.x-w < this.loc.x && enemy.loc.x+w > this.loc.x)) {
 		this.init();
 	}
 }
@@ -104,6 +109,11 @@ Player.prototype.init = function() {
 		x: PLAYER_START_X,
 		y: PLAYER_START_Y
 	};
+	this.target = {
+		x: PLAYER_START_X,
+		y: PLAYER_START_Y
+	}
+
 };
 
 Player.prototype.update = function(dt) {
@@ -160,7 +170,7 @@ var allEnemies = new Array();
 
 for(i=0; i<3; i++) {
 	var enemy = new Enemy();
-	enemy.loc.y = ROW_Y[i];
+	enemy.loc.y = ENEMY_Y[i];
 	allEnemies[i] = enemy;
 }
 
