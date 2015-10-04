@@ -23,6 +23,7 @@ var Engine = (function(global) {
         win = global.window,
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
+        gemTimer = 0,
         lastTime,
         animID;
 
@@ -98,8 +99,22 @@ var Engine = (function(global) {
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
-        player.update();
-    }
+        if(gem instanceof Gem) {
+	        gem.update(dt);
+	        if(gem.timer < 0) {
+	        	gem = null;
+	        }
+        }
+        else {
+        	gemTimer += dt;
+//        	console.log("xx: " + xx);
+        	if(gemTimer > 3) {
+        		gem = new Gem();
+        		gemTimer = 0;
+        	}
+        }
+		player.update();
+     }
 
     /* This function initially draws the "game level", it will then call
      * the renderEntities function. Remember, this function is called every
@@ -156,6 +171,9 @@ var Engine = (function(global) {
             enemy.render();
         });
 
+        if(gem instanceof Gem) {
+	        gem.render();
+        }
         player.render();
     }
 
@@ -175,6 +193,9 @@ var Engine = (function(global) {
         'images/stone-block.png',
         'images/water-block.png',
         'images/grass-block.png',
+        'images/Gem Blue.png',
+        'images/Gem Green.png',
+        'images/Gem Orange.png',
         'images/enemy-bug.png',
         'images/char-boy.png'
     ]);
