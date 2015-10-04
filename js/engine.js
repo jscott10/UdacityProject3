@@ -182,7 +182,8 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-        // noop
+		window.cancelAnimationFrame(global.animID);
+
     }
 
     /* Go ahead and load all of the images we know we're going to need to
@@ -193,9 +194,7 @@ var Engine = (function(global) {
         'images/stone-block.png',
         'images/water-block.png',
         'images/grass-block.png',
-        'images/Gem Blue.png',
-        'images/Gem Green.png',
-        'images/Gem Orange.png',
+        'images/Star.png',
         'images/enemy-bug.png',
         'images/char-boy.png'
     ]);
@@ -206,5 +205,11 @@ var Engine = (function(global) {
      * from within their app.js files.
      */
     global.ctx = ctx;
+
+	document.addEventListener('keyup', function(e) {
+	    if(e.keyCode === 81) {
+	    	reset();
+	    };
+	});
 
 })(this);

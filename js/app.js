@@ -8,8 +8,8 @@ var ENEMY_START_X = -101, // Initial x-coord (left) of Enemy
 	ENEMY_WIDTH = 101, // Enemy width (x pixels)
 	PLAYER_START_X = 200, // Initial x-coord (left) of Player
 	PLAYER_START_Y = 325, // Initial y-coord (top) of player
-	PLAYER_JUMP_X = 101, // Abs value of x-displacement (left-arrow, right-arrow)
-	PLAYER_JUMP_Y = 84; // Abs value of y-displacement (up-arrow, down-arrow)
+	PLAYER_MOVE_X = 101, // Abs value of x-displacement (left-arrow, right-arrow)
+	PLAYER_MOVE_Y = 84; // Abs value of y-displacement (up-arrow, down-arrow)
 
 // Randomize enemy speed:
 
@@ -43,7 +43,7 @@ Enemy.prototype.update = function(dt) {
 	this.loc.x += (dt * this.v);
 	// If Enemy moves beyond end of row, wrap to beginning
 	if(this.loc.x > ENEMY_END_X) {
-		this.reset();
+		this.wrap();
 	}
 
     // You should multiply any movement by the dt parameter
@@ -57,10 +57,14 @@ Enemy.prototype.render = function() {
 };
 
 // Position Enemy at start of row and randomize speed.
-Enemy.prototype.reset = function() {
+Enemy.prototype.wrap = function() {
 	this.loc.x = ENEMY_START_X;
 	this.v = randomEnemySpeed();
 }
+
+
+
+
 
 // Now write your own player class
 // This class requires an update(), render() and
@@ -68,20 +72,15 @@ Enemy.prototype.reset = function() {
 
 var Player = function() {
 
-	this.loc = {
-		x: PLAYER_START_X,
-		y: PLAYER_START_Y
-	};
-
-	this.target = {
-		x : this.loc.x,
-	 	y : this.loc.y
-	}
+	this.init();
 
 	this.sprite = 'images/char-boy.png';
 };
 
 Player.prototype.init = function() {
+
+	this.score = 0;
+
 	this.loc = {
 		x: PLAYER_START_X,
 		y: PLAYER_START_Y
@@ -93,18 +92,39 @@ Player.prototype.init = function() {
 
 };
 
+Player.prototype.move = function(direction) {
+	switch(direction) {
+		case 'left':
+			if((this.loc.x - PLAYER_MOVE_X) > 0) {
+				this.loc.x -= PLAYER_MOVE_X;
+			}
+			break;
+		case 'up':
+			if((this.loc.y - PLAYER_MOVE_Y) >= -11) {
+				this.loc.y -= PLAYER_MOVE_Y;
+			}
+			break;
+		case 'right':
+			if((this.loc.x + PLAYER_MOVE_X) < 401) {
+				this.loc.x += PLAYER_MOVE_X;
+			}
+			break;
+		case 'down':
+			if((this.loc.y + PLAYER_MOVE_Y) <= 325) {
+				this.loc.y += PLAYER_MOVE_Y;
+			}
+			break;
+	}
+	console.log("x: "+this.loc.x + " y: "+this.loc.y);
+}
+
 Player.prototype.update = function(dt) {
-	if(this.target.x > -1 && this.target.x < 401) {
-		this.loc.x = this.target.x;
-	}
-	else {
-		this.target.x = this.loc.x;
-	}
-	if(this.target.y > -50 && this.target.y < 331) {
-		this.loc.y = this.target.y;
-	}
-	else {
-		this.target.y = this.loc.y;
+	// Made it!
+	if(this.loc.y === -11) {
+		this.updateScore(10);
+		displayScore(this.score);
+		this.loc.x = PLAYER_START_X;
+		this.loc.y = PLAYER_START_Y;
 	}
 	// Detect enemy collision
 	allEnemies.forEach(function (enemy, index, arr) {
@@ -116,32 +136,21 @@ Player.prototype.update = function(dt) {
 		// console.log("p: "+this.loc.y);
 		if ((enemy.loc.y == this.loc.y-11) && (enemy.loc.x-ENEMY_WIDTH < this.loc.x && enemy.loc.x+ENEMY_WIDTH > this.loc.x)) {
 			this.init();
+			displayScore(this.score);
 		}
 	},this);
 };
+
+Player.prototype.updateScore = function(score) {
+	this.score += score;
+}
 
 Player.prototype.render = function(dt) {
 	ctx.drawImage(Resources.get(this.sprite), this.loc.x, this.loc.y);
 };
 
 Player.prototype.handleInput = function(key) {
-	switch(key) {
-		case 'left':
-			this.target.x -= PLAYER_JUMP_X;
-			break;
-		case 'up':
-			this.target.y -= PLAYER_JUMP_Y;
-			break;
-		case 'right':
-			this.target.x += PLAYER_JUMP_X;
-			break;
-		case 'down':
-			this.target.y += PLAYER_JUMP_Y;
-			break;
-		case 'quit':
-			window.cancelAnimationFrame(animID);
-			break;
-	}
+	this.move(key);
 };
 
 var Gem = function() {
@@ -149,16 +158,16 @@ var Gem = function() {
 	this.timer = 5;
 
 	this.loc = {
-		x: 400,
+		x: Math.floor(Math.random() * 5) * 101,
 		y: ROW_Y[Math.floor(Math.random() * 3)]
 	};
 
-    this.sprite = 'images/Gem Green.png';
+    this.sprite = 'images/Star.png';
 };
 
 Gem.prototype.countdown = function(dt) {
 	this.timer -= dt;
-	console.log(this.timer);
+//	console.log(this.timer);
 };
 
 Gem.prototype.update = function(dt) {
@@ -187,6 +196,12 @@ var player = new Player();
 
 var gem = new Gem();
 
+function displayScore(score) {
+	ctx.font = "20px Georgia";
+	ctx.clearRect(0,0,100,30);
+	ctx.fillText(score,0,20);
+}
+
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {
@@ -194,8 +209,7 @@ document.addEventListener('keyup', function(e) {
         37: 'left',
         38: 'up',
         39: 'right',
-        40: 'down',
-        32: 'quit'
+        40: 'down'
     };
 
     player.handleInput(allowedKeys[e.keyCode]);
