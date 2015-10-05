@@ -6,7 +6,7 @@ var ENEMY_START_X = -101, // Initial x-coord (left) of Enemy
 	ENEMY_MIN_SPEED = 5, // MINIMUM Enemy speed
 	ENEMY_MAX_SPEED = 50, // MAXIMUM Enemy speed
 	ENEMY_WIDTH = 101, // Enemy width (x pixels)
-	PLAYER_START_X = 200, // Initial x-coord (left) of Player
+	PLAYER_START_X = 202, // Initial x-coord (left) of Player
 	PLAYER_START_Y = 325, // Initial y-coord (top) of player
 	PLAYER_MOVE_X = 101, // Abs value of x-displacement (left-arrow, right-arrow)
 	PLAYER_MOVE_Y = 84; // Abs value of y-displacement (up-arrow, down-arrow)
@@ -72,14 +72,30 @@ Enemy.prototype.wrap = function() {
 
 var Player = function() {
 
-	this.init();
+	this.initGame();
 
 	this.sprite = 'images/char-boy.png';
 };
 
-Player.prototype.init = function() {
+Player.prototype.initGame = function() {
 
 	this.score = 0;
+	this.lives = 5;
+
+	this.loc = {
+		x: PLAYER_START_X,
+		y: PLAYER_START_Y
+	};
+	this.target = {
+		x: PLAYER_START_X,
+		y: PLAYER_START_Y
+	};
+
+};
+
+Player.prototype.initTurn = function() {
+
+	this.lives--;
 
 	this.loc = {
 		x: PLAYER_START_X,
@@ -95,7 +111,7 @@ Player.prototype.init = function() {
 Player.prototype.move = function(direction) {
 	switch(direction) {
 		case 'left':
-			if((this.loc.x - PLAYER_MOVE_X) > 0) {
+			if((this.loc.x - PLAYER_MOVE_X) >= 0) {
 				this.loc.x -= PLAYER_MOVE_X;
 			}
 			break;
@@ -105,7 +121,7 @@ Player.prototype.move = function(direction) {
 			}
 			break;
 		case 'right':
-			if((this.loc.x + PLAYER_MOVE_X) < 401) {
+			if((this.loc.x + PLAYER_MOVE_X) <= 404) {
 				this.loc.x += PLAYER_MOVE_X;
 			}
 			break;
@@ -134,11 +150,21 @@ Player.prototype.update = function(dt) {
 		// console.log(arr);
 		// console.log("e: "+enemy.loc.y);
 		// console.log("p: "+this.loc.y);
-		if ((enemy.loc.y == this.loc.y-11) && (enemy.loc.x-ENEMY_WIDTH < this.loc.x && enemy.loc.x+ENEMY_WIDTH > this.loc.x)) {
-			this.init();
+		if ((enemy.loc.y == this.loc.y-11) && (enemy.loc.x-ENEMY_WIDTH+17 < this.loc.x && enemy.loc.x+ENEMY_WIDTH-17 > this.loc.x)) {
+			this.initTurn();
 			displayScore(this.score);
 		}
 	},this);
+
+	// Detect star collision
+	if ((star instanceof Star) &&
+	    (star.loc.y == this.loc.y-11) &&
+	    (star.loc.x-ENEMY_WIDTH < this.loc.x && star.loc.x+ENEMY_WIDTH > this.loc.x)) {
+			this.updateScore(40);
+			displayScore(this.score);
+			star = null;
+	}
+
 };
 
 Player.prototype.updateScore = function(score) {
@@ -153,7 +179,7 @@ Player.prototype.handleInput = function(key) {
 	this.move(key);
 };
 
-var Gem = function() {
+var Star = function() {
 
 	this.timer = 5;
 
@@ -165,18 +191,18 @@ var Gem = function() {
     this.sprite = 'images/Star.png';
 };
 
-Gem.prototype.countdown = function(dt) {
+Star.prototype.countdown = function(dt) {
 	this.timer -= dt;
 //	console.log(this.timer);
 };
 
-Gem.prototype.update = function(dt) {
+Star.prototype.update = function(dt) {
 	if(this.timer > 0) {
 		this.countdown(dt);
 	}
 };
 
-Gem.prototype.render = function(dt) {
+Star.prototype.render = function(dt) {
 	ctx.drawImage(Resources.get(this.sprite), this.loc.x, this.loc.y);
 };
 
@@ -194,12 +220,13 @@ for(i=0; i<3; i++) {
 
 var player = new Player();
 
-var gem = new Gem();
+var star = new Star();
 
 function displayScore(score) {
 	ctx.font = "20px Georgia";
-	ctx.clearRect(0,0,100,30);
+	ctx.clearRect(0,0,400,30);
 	ctx.fillText(score,0,20);
+	ctx.fillText("Lives: "+player.lives,100,20);
 }
 
 // This listens for key presses and sends the keys to your

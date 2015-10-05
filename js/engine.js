@@ -23,7 +23,7 @@ var Engine = (function(global) {
         win = global.window,
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
-        gemTimer = 0,
+        starTimer = 0,
         lastTime,
         animID;
 
@@ -44,6 +44,10 @@ var Engine = (function(global) {
          * computer is) - hurray time!
          */
 
+		if(player.lives == 0) {
+			reset();
+		}
+
         var now = Date.now(),
             dt = (now - lastTime) / 1000.0;
 
@@ -61,7 +65,7 @@ var Engine = (function(global) {
         /* Use the browser's requestAnimationFrame function to call this
          * function again as soon as the browser is able to draw another frame.
          */
-        global.animID = win.requestAnimationFrame(main);
+        animID = win.requestAnimationFrame(main);
     }
 
     /* This function does some initial setup that should only occur once,
@@ -99,18 +103,18 @@ var Engine = (function(global) {
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
-        if(gem instanceof Gem) {
-	        gem.update(dt);
-	        if(gem.timer < 0) {
-	        	gem = null;
+        if(star instanceof Star) {
+	        star.update(dt);
+	        if(star.timer < 0) {
+	        	star = null;
 	        }
         }
         else {
-        	gemTimer += dt;
+        	starTimer += dt;
 //        	console.log("xx: " + xx);
-        	if(gemTimer > 3) {
-        		gem = new Gem();
-        		gemTimer = 0;
+        	if(starTimer > 3) {
+        		star = new Star();
+        		starTimer = 0;
         	}
         }
 		player.update();
@@ -171,8 +175,8 @@ var Engine = (function(global) {
             enemy.render();
         });
 
-        if(gem instanceof Gem) {
-	        gem.render();
+        if(star instanceof Star) {
+	        star.render();
         }
         player.render();
     }
@@ -182,7 +186,7 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-		window.cancelAnimationFrame(global.animID);
+		win.cancelAnimationFrame(animID);
 
     }
 
