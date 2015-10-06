@@ -44,8 +44,9 @@ var Engine = (function(global) {
          * computer is) - hurray time!
          */
 
-		if(player.lives == 0) {
-			reset();
+		if(player.livesRemaining === 0) {
+            displayGoodbyeMsg();
+			return;
 		}
 
         var now = Date.now(),
@@ -103,20 +104,23 @@ var Engine = (function(global) {
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
+
+        // If star exists, dereference when expired
+        // Otherwise, create a new star after 3 seconds
         if(star instanceof Star) {
 	        star.update(dt);
-	        if(star.timer < 0) {
+	        if(star.expired) {
 	        	star = null;
 	        }
         }
         else {
         	starTimer += dt;
-//        	console.log("xx: " + xx);
         	if(starTimer > 3) {
         		star = new Star();
         		starTimer = 0;
         	}
         }
+
 		player.update();
      }
 
@@ -187,7 +191,12 @@ var Engine = (function(global) {
      */
     function reset() {
 		win.cancelAnimationFrame(animID);
+        displayGoodbyeMsg();
+    }
 
+    function displayGoodbyeMsg() {
+        ctx.font = "60px Arial";
+        ctx.fillText("GAME OVER",200,150);
     }
 
     /* Go ahead and load all of the images we know we're going to need to
@@ -210,6 +219,7 @@ var Engine = (function(global) {
      */
     global.ctx = ctx;
 
+    // Listen for "Q" key to stop animation
 	document.addEventListener('keyup', function(e) {
 	    if(e.keyCode === 81) {
 	    	reset();

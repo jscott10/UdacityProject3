@@ -76,7 +76,7 @@ var Player = function() {
 	};
 
 	this.score = 0;
-	this.lives = 5;
+	this.livesRemaining = 5;
 
 	this.sprite = 'images/char-boy.png';
 };
@@ -91,7 +91,7 @@ Player.prototype.setStartPosition = function() {
 // DECREMENT the lives counter, set Player location to START
 Player.prototype.initTurn = function() {
 
-	this.lives--;
+	this.livesRemaining--;
 
 	this.setStartPosition();
 
@@ -119,7 +119,6 @@ Player.prototype.move = function(direction) {
 		case 'down':
 			if((this.loc.y + PLAYER_MOVE_Y) <= PLAYER_Y_LOWER_LIMIT) {
 				this.loc.y += PLAYER_MOVE_Y;
-				console.log("inside the CASE");
 			}
 			break;
 	}
@@ -133,7 +132,6 @@ Player.prototype.update = function(dt) {
 	//	If Player made it to top row, increment score, display score and reset to start position
 	if(this.loc.y === PLAYER_Y_UPPER_LIMIT) {
 		this.updateScore(10);
-		displayScore(this.score);
 		this.setStartPosition();
 	}
 
@@ -143,18 +141,18 @@ Player.prototype.update = function(dt) {
 	allEnemies.forEach(function (enemy) {
 		if( (enemy.loc.y == this.loc.y + 8) && 
 			((enemy.loc.x - ENEMY_WIDTH + 17 < this.loc.x) && (enemy.loc.x + ENEMY_WIDTH - 17 > this.loc.x)) ) {
-			displayScore(this.score);
 			this.initTurn();
 		}
 	},this);
 
 	// If Player collides with a Star, increment score, display score and destroy the Star object
-
 	if( (star instanceof Star) && ((star.loc.x === this.loc.x) && (star.loc.y === (this.loc.y + 8)))) {
 		this.updateScore(40);
-		displayScore(this.score);
 		star = null;
 	}
+
+	displayGameStatus(this.score, this.livesRemaining);
+
 };
 
 // Increment the score
@@ -179,6 +177,9 @@ var Star = function() {
 	// Lifetime of the Star (5 seconds)
 	this.timer = 5;
 
+	// Expired flag. Star disappears when expired
+	this.expired = false;
+
 	// Random location of the Star
 	this.loc = {
 		x: Math.floor(Math.random() * 5) * 101,
@@ -198,6 +199,10 @@ Star.prototype.update = function(dt) {
 	if(this.timer > 0) {
 		this.countdown(dt);
 	}
+	else {
+		this.expired = true;
+	}
+
 };
 
 Star.prototype.render = function(dt) {
@@ -212,10 +217,11 @@ var allEnemies = new Array();
 
 initializeEnemyArray();
 
-var player = new Player();
-
 var star = new Star();
 
+var player = new Player();
+
+// Set up the allEnemyies array
 function initializeEnemyArray() {
 	for(i=0; i<3; i++) {
 		allEnemies[i] = new Enemy();
@@ -223,11 +229,11 @@ function initializeEnemyArray() {
 }
 
 // Display the score and lives remaining at the top of the screen
-function displayScore(score) {
+function displayGameStatus(score, livesRemaining) {
 	ctx.font = "20px Georgia";
-	ctx.clearRect(0,0,400,30);
-	ctx.fillText(score,0,20);
-	ctx.fillText("Lives: "+player.lives,100,20);
+	ctx.clearRect(0,0,505,40);
+	ctx.fillText("Score: " + score,0,30);
+	ctx.fillText("Lives: " + livesRemaining,400,30);
 }
 
 // This listens for key presses and sends the keys to your
