@@ -57,6 +57,7 @@ var Engine = (function(global) {
          */
         update(dt);
         render();
+        displayGameStatus(player.score, player.livesRemaining);
 
         /* Set our lastTime variable which is used to determine the time delta
          * for the next time this function is called.
@@ -75,6 +76,7 @@ var Engine = (function(global) {
      */
     function init() {
         reset();
+        displayWelcomeMsg();
         lastTime = Date.now();
         main();
     }
@@ -191,15 +193,38 @@ var Engine = (function(global) {
      */
     function reset() {
 		win.cancelAnimationFrame(animID);
-        displayGoodbyeMsg();
+ //       displayGoodbyeMsg();
     }
 
     function displayGoodbyeMsg() {
         ctx.font = "60px Arial";
-        ctx.fillText("GAME OVER",200,150);
+        ctx.fillStyle = "#fff";
+        ctx.strokeStyle = "#000";
+        ctx.lineWidth = 3;
+        ctx.textAlign = "center";
+        ctx.fillText("GAME OVER",250,270);
+        ctx.strokeText("GAME OVER",250,270);
     }
 
-    /* Go ahead and load all of the images we know we're going to need to
+    function displayWelcomeMsg() {
+        ctx.font = "20px Arial";
+        ctx.fillText("How to Play", 50, 150);
+        ctx.fillText("Click the Arrows", 50, 180);
+        ctx.fillText("Dodge the Bugs", 50, 2100);
+        ctx.fillText("Eat the Stars", 50, 240);
+    }
+
+     // Display the score and lives remaining at the top of the screen
+    function displayGameStatus(score, livesRemaining) {
+        ctx.clearRect(0,0,505,40);
+        ctx.font = "20px Georgia";
+        ctx.textAlign = "left";
+        ctx.fillText("Score: " + score,0,30);
+        ctx.textAlign = "right";
+        ctx.fillText("Lives: " + livesRemaining,505,30);
+    }
+
+   /* Go ahead and load all of the images we know we're going to need to
      * draw our game level. Then set init as the callback method, so that when
      * all of these images are properly loaded our game will start.
      */

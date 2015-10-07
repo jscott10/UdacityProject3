@@ -151,8 +151,6 @@ Player.prototype.update = function(dt) {
 		star = null;
 	}
 
-	displayGameStatus(this.score, this.livesRemaining);
-
 };
 
 // Increment the score
@@ -226,14 +224,6 @@ function initializeEnemyArray() {
 	for(i=0; i<3; i++) {
 		allEnemies[i] = new Enemy();
 	}
-}
-
-// Display the score and lives remaining at the top of the screen
-function displayGameStatus(score, livesRemaining) {
-	ctx.font = "20px Georgia";
-	ctx.clearRect(0,0,505,40);
-	ctx.fillText("Score: " + score,0,30);
-	ctx.fillText("Lives: " + livesRemaining,400,30);
 }
 
 // This listens for key presses and sends the keys to your
