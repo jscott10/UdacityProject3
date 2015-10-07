@@ -25,13 +25,11 @@ var Engine = (function(global) {
         ctx = canvas.getContext('2d'),
         starTimer = 0,
         lastTime,
-        animID;
+        paused = false;
 
     canvas.width = 505;
     canvas.height = 606;
     doc.body.appendChild(canvas);
-
-    doc.endgame = false;
 
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
@@ -57,7 +55,6 @@ var Engine = (function(global) {
          */
         update(dt);
         render();
-        setGameStatusStyle();
         displayGameStatus(player.score, player.livesRemaining);
 
         /* Set our lastTime variable which is used to determine the time delta
@@ -68,7 +65,7 @@ var Engine = (function(global) {
         /* Use the browser's requestAnimationFrame function to call this
          * function again as soon as the browser is able to draw another frame.
          */
-        animID = win.requestAnimationFrame(main);
+        win.requestAnimationFrame(main);
     }
 
     /* This function does some initial setup that should only occur once,
@@ -76,7 +73,12 @@ var Engine = (function(global) {
      * game loop.
      */
     function init() {
-        reset();
+        player.score = 0;
+        player.livesRemaining = 5;
+        player.setStartPosition();
+        star = null;
+        setGameStatusStyle();
+        render();
         displayWelcomeMsg();
         lastTime = Date.now();
         main();
@@ -193,7 +195,8 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-		win.cancelAnimationFrame(animID);
+        init();
+//		win.cancelAnimationFrame(animID);
  //       displayGoodbyeMsg();
     }
 
@@ -258,9 +261,27 @@ var Engine = (function(global) {
 
     // Listen for "Q" key to stop animation
 	document.addEventListener('keyup', function(e) {
-	    if(e.keyCode === 81) {
-	    	reset();
-	    };
+        var allowedKeys = {
+            37: 'left',
+            38: 'up',
+            39: 'right',
+            40: 'down',
+            80: 'pause',
+            32: 'start'
+        };
+
+       
+	    if(allowedKeys[e.keyCode] === 'pause') {
+            if(paused) {
+//                go();
+            }
+            else {
+//                pause();
+            }
+        }
+        else if(allowedKeys[e.keyCode] === 'start') {
+//            startGame();
+	    }
 	});
 
 })(this);
