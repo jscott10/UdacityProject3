@@ -57,6 +57,7 @@ var Engine = (function(global) {
          */
         update(dt);
         render();
+        setGameStatusStyle();
         displayGameStatus(player.score, player.livesRemaining);
 
         /* Set our lastTime variable which is used to determine the time delta
@@ -207,17 +208,28 @@ var Engine = (function(global) {
     }
 
     function displayWelcomeMsg() {
+        ctx.globalAlpha = 0.7;
+        ctx.fillStyle = "#fff";
+        ctx.fillRect(50, 50, canvas.width-50, canvas.height-50);
+        ctx.globalAlpha = 1.0;
+        ctx.strokeStyle = "#000";
         ctx.font = "20px Arial";
         ctx.fillText("How to Play", 50, 150);
         ctx.fillText("Click the Arrows", 50, 180);
         ctx.fillText("Dodge the Bugs", 50, 2100);
         ctx.fillText("Eat the Stars", 50, 240);
-    }
+        ctx.restore();
+     }
+
+    function setGameStatusStyle() {
+        ctx.font = "20px Georgia";
+        ctx.fillStyle = "#000";
+        ctx.save();
+   }
 
      // Display the score and lives remaining at the top of the screen
     function displayGameStatus(score, livesRemaining) {
-        ctx.clearRect(0,0,505,40);
-        ctx.font = "20px Georgia";
+        ctx.clearRect(0,0,canvas.width,40);
         ctx.textAlign = "left";
         ctx.fillText("Score: " + score,0,30);
         ctx.textAlign = "right";
