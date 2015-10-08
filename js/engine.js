@@ -79,13 +79,7 @@ var Engine = (function(global) {
         star = null;
         setGameStatusStyle();
         render();
-        while(paused) {
-           setTimeout(function(){ displayWelcomeMsg(); }, 100);
-        }
-//        displayWelcomeMsg();
-//return;
-//        pause();
-
+        displayWelcomeMsg();
         lastTime = Date.now();
         main();
     }
@@ -217,6 +211,9 @@ var Engine = (function(global) {
     }
 
     function displayWelcomeMsg() {
+        if(!paused) {
+            return;
+        }
         ctx.globalAlpha = 0.7;
         ctx.fillStyle = "#fff";
         ctx.fillRect(50, 75, canvas.width-100, canvas.height-100);
@@ -227,7 +224,7 @@ var Engine = (function(global) {
         ctx.fillText("Click the Arrows", 200, 180);
         ctx.fillText("Dodge the Bugs", 200, 210);
         ctx.fillText("Eat the Stars", 200, 240);
-        ctx.restore();
+        win.requestAnimationFrame(displayWelcomeMsg);
      }
 
     function setGameStatusStyle() {
@@ -245,10 +242,11 @@ var Engine = (function(global) {
         ctx.fillText("Lives: " + livesRemaining,505,30);
     }
 
-    function pause() {
-        while(paused) {
-            setTimeout(function(){ return; }, 100);
+    function handleInput(key) {
+        if(key == 'start') {
+            paused = false;
         }
+        player.handleInput(key);
     }
 
    /* Go ahead and load all of the images we know we're going to need to
@@ -272,26 +270,19 @@ var Engine = (function(global) {
     global.ctx = ctx;
 
     // Listen for "Q" key to stop animation
-	document.addEventListener('keyup', function(e) {
+    document.addEventListener('keyup', function(e) {
         var allowedKeys = {
             37: 'left',
             38: 'up',
             39: 'right',
             40: 'down',
-            80: 'pause',
+//            80: 'pause',
             32: 'start'
         };
 
-         if(allowedKeys[e.keyCode] === 'pause') {
-             main();paused = !paused;
-             console.log("paused: "+paused);
-         }
-
-        // if(allowedKeys[e.keyCode] === 'start') {
-        //     paused = false;
-
-        player.handleInput(allowedKeys[e.keyCode]);
+        handleInput(allowedKeys[e.keyCode]);
+//        player.handleInput(allowedKeys[e.keyCode]);
   
-	});
+    });
 
 })(this);
