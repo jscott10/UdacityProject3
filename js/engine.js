@@ -211,7 +211,7 @@ var Engine = (function(global) {
     }
 
     function displayWelcomeMsg() {
-        if(!paused) {
+        if(paused = false) {
             return;
         }
         ctx.globalAlpha = 0.7;
