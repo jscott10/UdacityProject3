@@ -25,7 +25,7 @@ var Engine = (function(global) {
         ctx = canvas.getContext('2d'),
         starTimer = 0,
         lastTime,
-        paused = false;
+        paused = true;
 
     canvas.width = 505;
     canvas.height = 606;
@@ -79,7 +79,13 @@ var Engine = (function(global) {
         star = null;
         setGameStatusStyle();
         render();
-        displayWelcomeMsg();
+        while(paused) {
+           setTimeout(function(){ displayWelcomeMsg(); }, 100);
+        }
+//        displayWelcomeMsg();
+//return;
+//        pause();
+
         lastTime = Date.now();
         main();
     }
@@ -213,14 +219,14 @@ var Engine = (function(global) {
     function displayWelcomeMsg() {
         ctx.globalAlpha = 0.7;
         ctx.fillStyle = "#fff";
-        ctx.fillRect(50, 50, canvas.width-50, canvas.height-50);
+        ctx.fillRect(50, 75, canvas.width-100, canvas.height-100);
         ctx.globalAlpha = 1.0;
-        ctx.strokeStyle = "#000";
+        ctx.fillStyle = "#000";
         ctx.font = "20px Arial";
-        ctx.fillText("How to Play", 50, 150);
-        ctx.fillText("Click the Arrows", 50, 180);
-        ctx.fillText("Dodge the Bugs", 50, 2100);
-        ctx.fillText("Eat the Stars", 50, 240);
+        ctx.fillText("How to Play", 200, 150);
+        ctx.fillText("Click the Arrows", 200, 180);
+        ctx.fillText("Dodge the Bugs", 200, 210);
+        ctx.fillText("Eat the Stars", 200, 240);
         ctx.restore();
      }
 
@@ -237,6 +243,12 @@ var Engine = (function(global) {
         ctx.fillText("Score: " + score,0,30);
         ctx.textAlign = "right";
         ctx.fillText("Lives: " + livesRemaining,505,30);
+    }
+
+    function pause() {
+        while(paused) {
+            setTimeout(function(){ return; }, 100);
+        }
     }
 
    /* Go ahead and load all of the images we know we're going to need to
@@ -270,18 +282,16 @@ var Engine = (function(global) {
             32: 'start'
         };
 
-       
-	    if(allowedKeys[e.keyCode] === 'pause') {
-            if(paused) {
-//                go();
-            }
-            else {
-//                pause();
-            }
-        }
-        else if(allowedKeys[e.keyCode] === 'start') {
-//            startGame();
-	    }
+         if(allowedKeys[e.keyCode] === 'pause') {
+             main();paused = !paused;
+             console.log("paused: "+paused);
+         }
+
+        // if(allowedKeys[e.keyCode] === 'start') {
+        //     paused = false;
+
+        player.handleInput(allowedKeys[e.keyCode]);
+  
 	});
 
 })(this);
