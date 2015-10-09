@@ -11,9 +11,11 @@
 
 // Game Params
 
+var TILE_WIDTH = 101, // Width of 1 tile
+
 	// ENEMY
 
-var ENEMY_START_X = -101, // Initial x-coord (left) of Enemy
+	ENEMY_START_X = -101, // Initial x-coord (left) of Enemy
 	ENEMY_END_X = 505, // Final x-coord (left) of Enemy before wrapping
 	ROW_Y_COORD = [62, 146, 230], // y-coord (top) of Rows 1, 2 and 3
 	NUMBER_OF_ENEMIES = 3,
@@ -216,7 +218,7 @@ var Star = function() {
 
 	// Random location of the Star
 	this.loc = {
-		x: Math.floor(Math.random() * 5) * 101, // Random column
+		x: Math.floor(Math.random() * 5) * TILE_WIDTH, // Random column
 		y: ROW_Y_COORD[Math.floor(Math.random() * 3)] // Random Row
 	};
 
@@ -257,7 +259,7 @@ var player = new Player();
 
 // Set up the allEnemyies array
 function initializeEnemyArray() {
-	for(i=0; i<NUMBER_OF_ENEMIES; i++) {
+	for(var i=0; i<NUMBER_OF_ENEMIES; i++) {
 		allEnemies.push(new Enemy());
 	}
 }
