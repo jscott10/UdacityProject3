@@ -23,6 +23,7 @@ Move the PLAYER using the arrow keys:
 	RIGHT ARROW = Move RIGHT
 	UP ARROW = Move UP
 	DOWN ARROW = Move Down
+
 When the game ends, press "Y" or ENTER to start a new game
 
 */
