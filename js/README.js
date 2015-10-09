@@ -13,7 +13,7 @@ The game ends when the PLAYER runs out of lives.
 Capture STARS for extra points by occupying their squares before they disappear.
 
 50 points are awarded for reaching the water.
-10 points are awarded for capturing STARS.
+25 points are awarded for capturing STARS.
 
 How to play:
 
@@ -23,5 +23,6 @@ Move the PLAYER using the arrow keys:
 	RIGHT ARROW = Move RIGHT
 	UP ARROW = Move UP
 	DOWN ARROW = Move Down
+When the game ends, press "Y" or ENTER to start a new game
 
 */
