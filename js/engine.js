@@ -25,7 +25,7 @@ var Engine = (function(global) {
         ctx = canvas.getContext('2d'),
         starTimer = 0,
         lastTime,
-        paused = true;
+        running = false;
 
     canvas.width = 505;
     canvas.height = 606;
@@ -60,6 +60,7 @@ var Engine = (function(global) {
         /* Set our lastTime variable which is used to determine the time delta
          * for the next time this function is called.
          */
+
         lastTime = now;
 
         /* Use the browser's requestAnimationFrame function to call this
@@ -73,15 +74,10 @@ var Engine = (function(global) {
      * game loop.
      */
     function init() {
-        player.score = 0;
-        player.livesRemaining = 5;
-        player.setStartPosition();
-        star = null;
-        setGameStatusStyle();
-        render();
+        reset();
         displayWelcomeMsg();
+        ctx.restore();
         lastTime = Date.now();
-        main();
     }
 
     /* This function is called by main (our game loop) and itself calls all
@@ -95,7 +91,6 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        // checkCollisions();
     }
 
     /* This is called by the update function  and loops through all of the
@@ -120,7 +115,7 @@ var Engine = (function(global) {
         }
         else {
         	starTimer += dt;
-        	if(starTimer > 3) {
+        	if(starTimer > STAR_INTERVAL) {
         		star = new Star();
         		starTimer = 0;
         	}
@@ -168,7 +163,6 @@ var Engine = (function(global) {
             }
         }
 
-
         renderEntities();
     }
 
@@ -195,39 +189,55 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-        init();
-//		win.cancelAnimationFrame(animID);
- //       displayGoodbyeMsg();
+        running = false;
+        player.score = 0;
+        player.livesRemaining = LIVES_TO_START;
+        player.setStartPosition();
+        star = null;
+        setGameStatusStyle();
+        render();
     }
 
     function displayGoodbyeMsg() {
-        ctx.font = "60px Arial";
+        ctx.font = "bold 60px Arial";
         ctx.fillStyle = "#fff";
         ctx.strokeStyle = "#000";
         ctx.lineWidth = 3;
         ctx.textAlign = "center";
-        ctx.fillText("GAME OVER",250,270);
-        ctx.strokeText("GAME OVER",250,270);
+        ctx.textBaseline = "middle";
+        ctx.fillText("GAME OVER",canvas.width/2,270);
+        ctx.strokeText("GAME OVER",canvas.width/2,270);
+        ctx.font = "bold 30px Arial";
+        ctx.fillStyle = "#000";
+        ctx.shadowColor = '#fff';
+        ctx.shadowBlur = 20;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+
+        ctx.fillText("Play Again? (Y)", canvas.width/2, 340);
     }
 
     function displayWelcomeMsg() {
-        if(paused = false) {
-            return;
-        }
-        ctx.globalAlpha = 0.7;
+        ctx.globalAlpha = 0.6;
         ctx.fillStyle = "#fff";
-        ctx.fillRect(50, 75, canvas.width-100, canvas.height-100);
+        ctx.fillRect(25, 75, canvas.width-50, canvas.height-200);
         ctx.globalAlpha = 1.0;
         ctx.fillStyle = "#000";
+        ctx.font = "30px Arial";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("*** HOW TO PLAY ***", canvas.width/2, 150);
         ctx.font = "20px Arial";
-        ctx.fillText("How to Play", 200, 150);
-        ctx.fillText("Click the Arrows", 200, 180);
-        ctx.fillText("Dodge the Bugs", 200, 210);
-        ctx.fillText("Eat the Stars", 200, 240);
-        win.requestAnimationFrame(displayWelcomeMsg);
+        ctx.fillText("Use the ARROW KEYS to move", canvas.width/2, 190);
+        ctx.fillText("Head for the Water (50 points)!", canvas.width/2,230);
+        ctx.fillText("Eat the Stars (25 points)", canvas.width/2, 270);
+        ctx.fillText("Dodge the Bugs!", canvas.width/2, 310);
+        ctx.font = "30px Arial";
+        ctx.fillText("PRESS <SPACE> TO BEGIN!!!", canvas.width/2, 380);
      }
 
     function setGameStatusStyle() {
+        ctx.globalAlpha = 1.0;
         ctx.font = "20px Georgia";
         ctx.fillStyle = "#000";
         ctx.save();
@@ -239,14 +249,7 @@ var Engine = (function(global) {
         ctx.textAlign = "left";
         ctx.fillText("Score: " + score,0,30);
         ctx.textAlign = "right";
-        ctx.fillText("Lives: " + livesRemaining,505,30);
-    }
-
-    function handleInput(key) {
-        if(key == 'start') {
-            paused = false;
-        }
-        player.handleInput(key);
+        ctx.fillText("Lives: " + livesRemaining,canvas.width,30);
     }
 
    /* Go ahead and load all of the images we know we're going to need to
@@ -276,13 +279,19 @@ var Engine = (function(global) {
             38: 'up',
             39: 'right',
             40: 'down',
-//            80: 'pause',
-            32: 'start'
+            32: 'start',
+            13: 'restart',
+            89: 'restart'
         };
-
-        handleInput(allowedKeys[e.keyCode]);
-//        player.handleInput(allowedKeys[e.keyCode]);
-  
+        switch(allowedKeys[e.keyCode]) {
+            case 'start':
+                main();
+                break;
+            case 'restart':
+                init();
+                break;
+        }
+        player.handleInput(allowedKeys[e.keyCode]);  
     });
 
 })(this);
