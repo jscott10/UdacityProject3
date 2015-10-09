@@ -1,4 +1,17 @@
+/*
+ * app.js
+ *
+ * Udacity Project 3
+ *
+ * This file defines the game objects (Enemies, Players and Stars) and
+ * instantiates an Array of 3 Enemies, a Star and a Player
+ *
+ */
+
+
 // Game Params
+
+	// ENEMY
 
 var ENEMY_START_X = -101, // Initial x-coord (left) of Enemy
 	ENEMY_END_X = 505, // Final x-coord (left) of Enemy before wrapping
@@ -7,10 +20,12 @@ var ENEMY_START_X = -101, // Initial x-coord (left) of Enemy
 	ENEMY_MIN_SPEED = 5, // MINIMUM Enemy speed
 	ENEMY_MAX_SPEED = 50, // MAXIMUM Enemy speed
 	ENEMY_WIDTH = 101, // Enemy width (x pixels)
+
+	// PLAYER
+
 	PLAYER_START_X = 202, // Initial x-coord (left) of Player
 	PLAYER_START_Y = 390, // Initial y-coord (top) of player
 
-	// 
 	PLAYER_MOVE_X = 101, // Abs value of x-displacement (left-arrow, right-arrow)
 	PLAYER_MOVE_Y = 84, // Abs value of y-displacement (up-arrow, down-arrow)
 
@@ -21,26 +36,27 @@ var ENEMY_START_X = -101, // Initial x-coord (left) of Enemy
 	PLAYER_MAX_Y = 390,
 
 	// STAR
-	STAR_INTERVAL = 3,
-	STAR_DURATION = 5,
+
+	STAR_INTERVAL = 3, // Time between appearances
+	STAR_DURATION = 5, // Time on-screen
 
 	// Scoring
-	GOAL_POINTS = 50,
-	STAR_POINTS = 25,
-	LIVES_TO_START = 5;
+	GOAL_POINTS = 50, // Points awarded for reaching the water
+	STAR_POINTS = 25, // Points awarded for getting a Star
+	LIVES_TO_START = 5; // Lives awarded at start.
 
 
 // Enemies our player must avoid
 var Enemy = function() {
 
-    // Variables applied to each of our instances go here,
-    // we've provided one for you to get started
+	// Variables applied to each of our instances go here,
+	// we've provided one for you to get started
 
 	this.reset();
 
-    // The image/sprite for our enemies, this uses
-    // a helper we've provided to easily load images
-    this.sprite = 'images/enemy-bug.png';
+	// The image/sprite for our enemies, this uses
+	// a helper we've provided to easily load images
+	this.sprite = 'images/enemy-bug.png';
 };
 
 // Initialize Enemy:
@@ -84,8 +100,7 @@ var Player = function() {
 		y: PLAYER_START_Y
 	};
 
-	this.score = 0;
-	this.livesRemaining = 5;
+	this.resetStats();
 
 	this.sprite = 'images/char-boy.png';
 };
@@ -151,12 +166,12 @@ Player.prototype.update = function() {
 		this.setStartPosition();
 	}
 
-	// If Player collides with an Enemy, update the lives counter 
+	// If Player collides with an Enemy, update the lives counter
 	// and reset to start position
 	// Y-OFFSET OF PLAYER vs ENEMY = 8
 	// X-WIDTH OF transparent area around PLAYER = 17
 	allEnemies.forEach(function (enemy) {
-		if( (enemy.loc.y === this.loc.y + 8) && 
+		if( (enemy.loc.y === this.loc.y + 8) &&
 			((enemy.loc.x - ENEMY_WIDTH + 17 < this.loc.x) && (enemy.loc.x + ENEMY_WIDTH - 17 > this.loc.x)) ) {
 			this.initTurn();
 		}
@@ -164,8 +179,8 @@ Player.prototype.update = function() {
 
 	// If Player collides with a Star, increment score, display score and destroy the Star object
 	// Y-OFFSET OF PLAYER vs STAR = 8
-	if( (star instanceof Star) && 
-			((star.loc.x === this.loc.x) && 
+	if( (star instanceof Star) &&
+			((star.loc.x === this.loc.x) &&
 			(star.loc.y === (this.loc.y + 8)))) {
 		this.updateScore(STAR_POINTS);
 		star = null;
@@ -205,7 +220,7 @@ var Star = function() {
 		y: ROW_Y_COORD[Math.floor(Math.random() * 3)] // Random Row
 	};
 
-    this.sprite = 'images/Star.png';
+	this.sprite = 'images/Star.png';
 };
 
 // Decrement counter by time delta

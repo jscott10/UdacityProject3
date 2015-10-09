@@ -14,6 +14,8 @@
  * a little simpler to work with.
  */
 
+
+
 var Engine = (function(global) {
 	/* Predefine the variables we'll be using within this scope,
 	 * create the canvas element, grab the 2D context for that canvas
@@ -25,7 +27,7 @@ var Engine = (function(global) {
 		ctx = canvas.getContext('2d'),
 		starTimer = 0,
 		lastTime,
-		running = false;
+		running = false; // Flag to start the game
 
 	canvas.width = 505;
 	canvas.height = 606;
@@ -35,17 +37,19 @@ var Engine = (function(global) {
 	 * and handles properly calling the update and render methods.
 	 */
 	function main() {
+
+		// If the player runs out of lives, display the GAME OVER message and exit the loop
+		if(player.livesRemaining === 0) {
+			displayGoodbyeMsg();
+			return;
+		}
+
 		/* Get our time delta information which is required if your game
 		 * requires smooth animation. Because everyone's computer processes
 		 * instructions at different speeds we need a constant value that
 		 * would be the same for everyone (regardless of how fast their
 		 * computer is) - hurray time!
 		 */
-
-		if(player.livesRemaining === 0) {
-			displayGoodbyeMsg();
-			return;
-		}
 
 		var now = Date.now(),
 			dt = (now - lastTime) / 1000.0;
@@ -76,7 +80,7 @@ var Engine = (function(global) {
 	function init() {
 		reset();
 		displayWelcomeMsg();
-        // Restore the context for displaying scores
+		// Restore the context for displaying scores
 		ctx.restore();
 		lastTime = Date.now();
 	}
@@ -123,7 +127,7 @@ var Engine = (function(global) {
 		}
 
 		player.update();
-	 }
+	}
 
 	/* This function initially draws the "game level", it will then call
 	 * the renderEntities function. Remember, this function is called every
@@ -179,24 +183,27 @@ var Engine = (function(global) {
 			enemy.render();
 		});
 
+		// Render the STAR if it should be on the board
 		if(star instanceof Star) {
 			star.render();
 		}
+
 		player.render();
 	}
 
+	// Prepare the game:
 	// Reset the player state, destroy any existing STARS and render
-
-        function reset() {
-    		running = false;
-    		player.score = 0;
-    		player.livesRemaining = LIVES_TO_START;
-    		player.setStartPosition();
-    		star = null;
-    		setGameStatusStyle();
-    		render();
+	function reset() {
+		running = false;
+		player.score = 0;
+		player.livesRemaining = LIVES_TO_START;
+		player.setStartPosition();
+		star = null;
+		setGameStatusStyle();
+		render();
 	}
 
+	// Display GAME OVER and instructions to play again
 	function displayGoodbyeMsg() {
 		ctx.font = "bold 60px Arial";
 		ctx.fillStyle = "#fff";
@@ -216,6 +223,7 @@ var Engine = (function(global) {
 		ctx.fillText("Play Again? (Y)", canvas.width/2, 340);
 	}
 
+	// Display game instructions
 	function displayWelcomeMsg() {
 		ctx.globalAlpha = 0.6;
 		ctx.fillStyle = "#fff";
@@ -233,8 +241,9 @@ var Engine = (function(global) {
 		ctx.fillText("Dodge the Bugs!", canvas.width/2, 310);
 		ctx.font = "30px Arial";
 		ctx.fillText("PRESS <SPACE> TO BEGIN!!!", canvas.width/2, 380);
-	 }
+	}
 
+	// Set and save the context settings for drawing the score and lives remaining
 	function setGameStatusStyle() {
 		ctx.globalAlpha = 1.0;
 		ctx.font = "20px Georgia";
@@ -242,7 +251,7 @@ var Engine = (function(global) {
 		ctx.save();
    }
 
-	 // Display the score and lives remaining at the top of the screen
+	// Display the score and lives remaining at the top of the screen
 	function displayGameStatus(score, livesRemaining) {
 		ctx.clearRect(0,0,canvas.width,40);
 		ctx.textAlign = "left";
@@ -251,7 +260,7 @@ var Engine = (function(global) {
 		ctx.fillText("Lives: " + livesRemaining,canvas.width,30);
 	}
 
-   /* Go ahead and load all of the images we know we're going to need to
+	/* Go ahead and load all of the images we know we're going to need to
 	 * draw our game level. Then set init as the callback method, so that when
 	 * all of these images are properly loaded our game will start.
 	 */
@@ -289,7 +298,7 @@ var Engine = (function(global) {
 				init();
 				break;
 		}
-		player.handleInput(allowedKeys[e.keyCode]);  
+		player.handleInput(allowedKeys[e.keyCode]);
 	});
 
 })(this);
